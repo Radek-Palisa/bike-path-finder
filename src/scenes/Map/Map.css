@@ -1,3 +1,13 @@
+#map-container {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+   /* fixed + 100% height fills up the space between the top and bottom navigation.
+      With 100vh it extends over the bottom navigation */
+  height: 100%;
+}
+
 #map {
-  height: 100vh;
+  height: 100%;
 }

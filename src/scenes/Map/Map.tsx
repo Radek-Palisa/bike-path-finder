@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import './Map.css';
 import { Loader } from '@googlemaps/js-api-loader';
 import onLongPress from './services/onLongPress';
+import ActionPanel from './components/ActionPanel/ActionalPanel';
 
 const loader = new Loader({
   apiKey: process.env.REACT_APP_GOOGLE_API_KEY || '',
@@ -11,6 +12,7 @@ const loader = new Loader({
 export default function Map() {
   const mapDiv = useRef<HTMLDivElement>(null);
   const marker = useRef<google.maps.Marker | null>(null);
+  const [destination, setDestination] = useState<google.maps.LatLng | null>(null);
 
   useEffect(() => {
     loader.load().then(() => {
@@ -36,15 +38,23 @@ export default function Map() {
           position: e.latLng,
           map: map,
         });
+
+        setDestination(e.latLng);
       });
 
       map.addListener('click', () => {
         if (marker.current) {
           marker.current.setMap(null);
+          setDestination(null);
         }
       });
     });
   }, []);
 
-  return <div id="map" ref={mapDiv}></div>;
+  return (
+    <div id="map-container">
+      <div id="map" ref={mapDiv}></div>
+      <ActionPanel isOn={Boolean(destination)}>{destination?.toUrlValue()}</ActionPanel>
+    </div>
+  );
 }
