@@ -37,6 +37,12 @@ export default function Map() {
           map: map,
         });
       });
+
+      map.addListener('click', () => {
+        if (marker.current) {
+          marker.current.setMap(null);
+        }
+      });
     });
   }, []);
 
