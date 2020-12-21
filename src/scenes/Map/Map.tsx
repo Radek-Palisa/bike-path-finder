@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './Map.css';
 import { Loader } from '@googlemaps/js-api-loader';
+import onLongPress from './services/onLongPress';
 
 const loader = new Loader({
   apiKey: process.env.REACT_APP_GOOGLE_API_KEY || '',
@@ -8,9 +9,11 @@ const loader = new Loader({
 });
 
 export default function Map() {
+  const mapDiv = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     loader.load().then(() => {
-      const map = new google.maps.Map(document.getElementById('map') as HTMLElement, {
+      const map = new google.maps.Map(mapDiv.current as HTMLDivElement, {
         center: { lat: 41.4013398, lng: 2.2028568 },
         zoom: 15,
         // disableDefaultUI: true,
@@ -23,25 +26,11 @@ export default function Map() {
         gestureHandling: 'greedy',
       });
 
-      // const longpress = false;
-      // const start = 0;
-      // const end = 0;
-
-      // map.addListener('click', function (event) {
-      //   longpress ? console.log('Long Press') : console.log('Short Press');
-      // });
-
-      // map.addListener('mousedown', function (event) {
-      //   start = new Date().getTime();
-      //   setTimeout(() => {}, 500);
-      // });
-
-      // map.addListener('mouseup', function (event) {
-      //   end = new Date().getTime();
-      //   longpress = end - start < 500 ? false : true;
-      // });
+      onLongPress(map, e => {
+        console.log(e);
+      });
     });
   }, []);
 
-  return <div id="map"></div>;
+  return <div id="map" ref={mapDiv}></div>;
 }
