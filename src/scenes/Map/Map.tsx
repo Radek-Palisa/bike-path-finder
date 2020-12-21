@@ -10,6 +10,7 @@ const loader = new Loader({
 
 export default function Map() {
   const mapDiv = useRef<HTMLDivElement>(null);
+  const marker = useRef<google.maps.Marker | null>(null);
 
   useEffect(() => {
     loader.load().then(() => {
@@ -27,7 +28,14 @@ export default function Map() {
       });
 
       onLongPress(map, e => {
-        console.log(e);
+        if (marker.current) {
+          marker.current.setMap(null);
+        }
+
+        marker.current = new google.maps.Marker({
+          position: e.latLng,
+          map: map,
+        });
       });
     });
   }, []);
