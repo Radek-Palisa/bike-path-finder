@@ -17,13 +17,13 @@ export default function Map() {
       const map = new google.maps.Map(mapDiv.current as HTMLDivElement, {
         center: { lat: 41.4013398, lng: 2.2028568 },
         zoom: 15,
-        // disableDefaultUI: true,
+        disableDefaultUI: true,
         // mapTypeControl: false,
-        streetViewControl: false,
-        zoomControl: false,
-        fullscreenControl: false,
-        rotateControl: true,
-        scaleControl: true,
+        // streetViewControl: false,
+        // zoomControl: false,
+        // fullscreenControl: false,
+        // rotateControl: true,
+        // scaleControl: false,
         gestureHandling: 'greedy',
       });
 
