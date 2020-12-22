@@ -3,6 +3,7 @@ import './Map.css';
 import { Loader } from '@googlemaps/js-api-loader';
 import onLongPress from './services/onLongPress';
 import ActionPanel from './components/ActionPanel/ActionalPanel';
+import CurrentPositionControl from './components/CurrentPositionControl/CurrentPositionControl';
 
 const loader = new Loader({
   apiKey: process.env.REACT_APP_GOOGLE_API_KEY || '',
@@ -48,6 +49,8 @@ export default function Map() {
           setDestination(null);
         }
       });
+
+      new CurrentPositionControl(map);
     });
   }, []);
 
