@@ -2,6 +2,7 @@
 // https://developers.google.com/maps/documentation/javascript/controls#CustomControls
 
 import { getCurrentPosition, watchCurrentPosition } from '../../services/geolocationApi';
+import myLocationIcon from '../../../../assets/my_location.svg';
 
 type MaybeLatLngLiteral = google.maps.LatLngLiteral | null;
 
@@ -47,10 +48,8 @@ export default class CurrentPositionControl {
     }
 
     button.addEventListener('click', () => {
-      const locationButton = document.getElementById('locationButton');
-
       if (this.currentPosition) {
-        locationButton && locationButton.classList.add('active');
+        button.classList.add('active');
         map.panTo(this.currentPosition);
         this.dispatch(this.currentPosition);
         return;
@@ -80,7 +79,7 @@ export default class CurrentPositionControl {
           map: this.map,
           title: 'Hello World!',
           icon: {
-            url: '/assets/my_location.svg',
+            url: myLocationIcon,
           },
         });
         return;
