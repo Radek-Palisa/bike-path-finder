@@ -4,6 +4,7 @@ import { Loader } from '@googlemaps/js-api-loader';
 import onLongPress from './services/onLongPress';
 import ActionPanel from './components/ActionPanel/ActionalPanel';
 import CurrentPositionControl from './components/CurrentPositionControl/CurrentPositionControl';
+import { getBicingStationsGeoData } from './services/bicingApi';
 
 const loader = new Loader({
   apiKey: process.env.REACT_APP_GOOGLE_API_KEY || '',
@@ -51,6 +52,10 @@ export default function Map() {
       });
 
       new CurrentPositionControl(map);
+
+      getBicingStationsGeoData().then(data => {
+        map.data.addGeoJson(data);
+      });
     });
   }, []);
 
