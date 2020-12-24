@@ -1,13 +1,50 @@
+:root {
+  --color-primary-main: #4181ec;
+  --color-grey-dark: #757575;
+  --shadows-button-default: 0 0 3px rgba(0, 0, 0, 0.4);
+  --shadows-button-focus: 0px 0px 3px 2px #ffb30f;
+  --spacing-unit: 8px;
+  --spacing-xs: calc(0.5 * var(--spacing-unit));
+  --spacing-sm: calc(1 * var(--spacing-unit));
+  --spacing-md: calc(2 * var(--spacing-unit));
+  --spacing-lg: calc(3 * var(--spacing-unit));
+  --spacing-xl: calc(4 * var(--spacing-unit));
+}
+
 #map-container {
   position: fixed;
   left: 0;
   right: 0;
   top: 0;
-   /* fixed + 100% height fills up the space between the top and bottom navigation.
+  /* fixed + 100% height fills up the space between the top and bottom navigation.
       With 100vh it extends over the bottom navigation */
   height: 100%;
 }
 
 #map {
   height: 100%;
+}
+
+#locationButton {
+  height: 56px;
+  width: 56px;
+  color: var(--color-grey-dark);
+  background-color: #fff;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: var(--shadows-1);
+  cursor: pointer;
+  margin-bottom: var(--spacing-md);
+  margin-right: var(--spacing-md);
+  padding: 0;
+  transition: color 0.4s;
+}
+
+#locationButton.active {
+  color: var(--color-primary-main);
+}
+
+#locationButton:focus {
+  outline: none;
+  box-shadow: var(--shadows-button-focus);
 }
