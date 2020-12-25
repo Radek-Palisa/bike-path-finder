@@ -1,1 +1,25 @@
+:root {
+  --color-primary-light: #f4f8fd;
+  --color-primary-main: #4181ec;
+  --color-primary-dark: #0055b9;
 
+  --color-secondary-light: #ff8276;
+  --color-secondary-main: #db504a;
+  --color-secondary-dark: #a31922;
+
+  --color-tertiary-light: #ffeb7a;
+  --color-tertiary-main: #ffc857;
+  --color-tertiary-dark: #c89825;
+
+  --color-grey-dark: #757575;
+
+  --shadows-button-default: 0 0 3px rgba(0, 0, 0, 0.4);
+  --shadows-button-focus: 0px 0px 3px 2px var(--color-tertiary-main);
+
+  --spacing-unit: 8px;
+  --spacing-xs: calc(0.5 * var(--spacing-unit));
+  --spacing-sm: calc(1 * var(--spacing-unit));
+  --spacing-md: calc(2 * var(--spacing-unit));
+  --spacing-lg: calc(3 * var(--spacing-unit));
+  --spacing-xl: calc(4 * var(--spacing-unit));
+}
