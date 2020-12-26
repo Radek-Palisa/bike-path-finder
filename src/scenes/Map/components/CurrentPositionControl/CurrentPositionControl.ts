@@ -4,18 +4,17 @@
 import { getCurrentPosition, watchCurrentPosition } from '../../services/geolocationApi';
 import myLocationIcon from '../../../../assets/my_location.svg';
 
-type MaybeLatLngLiteral = google.maps.LatLngLiteral | null;
-
-type OnClickCallback = (position: MaybeLatLngLiteral) => void | Promise<void>;
+type MaybeLatLng = google.maps.LatLng | null;
 
 export default class CurrentPositionControl {
   private map: google.maps.Map;
-  private currentPosition: MaybeLatLngLiteral = null;
+  private currentPosition: MaybeLatLng = null;
   private currentPositionMarker: google.maps.Marker | null = null;
   private isWatching = false;
-  private idCounter = 0;
-
-  private onClickListeners: Array<{ id: number; cb: OnClickCallback }> = [];
+  private isInitiliazed = false;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private resolve = (position: MaybeLatLng) => {};
+  private awaitInitialValue = new Promise<MaybeLatLng>(resolve => (this.resolve = resolve));
 
   constructor(map: google.maps.Map) {
     this.map = map;
@@ -37,6 +36,8 @@ export default class CurrentPositionControl {
         if (result.state !== 'granted') {
           // do nothing, user needs to first click on the control button for the
           // permission pop-up to show.
+          this.isInitiliazed = true;
+          this.resolve(null);
           return;
         }
         this.startPositionWatcher();
@@ -51,18 +52,27 @@ export default class CurrentPositionControl {
       if (this.currentPosition) {
         button.classList.add('active');
         map.panTo(this.currentPosition);
-        this.dispatch(this.currentPosition);
         return;
       }
       getCurrentPosition()
         .then(newPosition => {
           map.panTo(newPosition);
-          this.currentPosition = newPosition;
+          this.currentPosition = new google.maps.LatLng(newPosition);
+
+          if (!this.isInitiliazed) {
+            this.isInitiliazed = true;
+            this.resolve(this.currentPosition);
+          }
+
           this.startPositionWatcher();
-          this.dispatch(newPosition);
         })
-        // ignore errors for now
-        .catch(() => null);
+        .catch(() => {
+          if (!this.isInitiliazed) {
+            this.isInitiliazed = true;
+            this.resolve(null);
+          }
+          return null;
+        });
     });
   }
 
@@ -71,13 +81,19 @@ export default class CurrentPositionControl {
 
     watchCurrentPosition(currentPosition => {
       // keep the previous position in case the new is null (failed to locate)
-      this.currentPosition = currentPosition || this.currentPosition;
+      this.currentPosition = currentPosition
+        ? new google.maps.LatLng(currentPosition)
+        : this.currentPosition;
+
+      if (!this.isInitiliazed) {
+        this.isInitiliazed = true;
+        this.resolve(this.currentPosition);
+      }
 
       if (!this.currentPositionMarker) {
         this.currentPositionMarker = new google.maps.Marker({
-          position: this.currentPosition as google.maps.LatLngLiteral,
+          position: this.currentPosition as google.maps.LatLng,
           map: this.map,
-          title: 'Hello World!',
           icon: {
             url: myLocationIcon,
           },
@@ -85,24 +101,12 @@ export default class CurrentPositionControl {
         return;
       }
       this.currentPositionMarker.setPosition(this.currentPosition);
+
+      this.isWatching = true;
     });
   };
 
-  private dispatch = (newPosition: MaybeLatLngLiteral) => {
-    this.onClickListeners.map(({ cb }) => cb(newPosition));
-  };
-
-  getCurrentPosition = () => this.currentPosition;
-
-  addOnClickListener = (cb: OnClickCallback) => {
-    this.idCounter++;
-
-    const listenerId = this.idCounter;
-
-    this.onClickListeners.push({ id: listenerId, cb });
-
-    return () => {
-      this.onClickListeners = this.onClickListeners.filter(({ id }) => id !== listenerId);
-    };
+  getCurrentPosition = (): Promise<MaybeLatLng> => {
+    return this.isInitiliazed ? Promise.resolve(this.currentPosition) : this.awaitInitialValue;
   };
 }

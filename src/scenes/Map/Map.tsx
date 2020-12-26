@@ -4,11 +4,13 @@ import { Loader } from '@googlemaps/js-api-loader';
 import onLongPress from './services/onLongPress';
 import ActionPanel from './components/ActionPanel/ActionalPanel';
 import CurrentPositionControl from './components/CurrentPositionControl/CurrentPositionControl';
-import { getBicingStationsGeoData } from './services/bicingApi';
+import { fetchBicingStationsStatus, getBicingStationsGeoData } from './services/bicingApi';
+import { GeoJsonFeature } from './services/types';
 
 const loader = new Loader({
   apiKey: process.env.REACT_APP_GOOGLE_API_KEY || '',
   version: 'weekly',
+  libraries: ['geometry'],
 });
 
 export default function Map() {
@@ -51,11 +53,46 @@ export default function Map() {
         }
       });
 
-      new CurrentPositionControl(map);
+      const currentPositionControl = new CurrentPositionControl(map);
+      const currentPositionPromise = currentPositionControl.getCurrentPosition();
 
-      getBicingStationsGeoData().then(data => {
+      const stationsInfoPromise = getBicingStationsGeoData().then(data => {
         map.data.addGeoJson(data);
+        return data;
       });
+
+      Promise.all([stationsInfoPromise, currentPositionPromise]).then(
+        ([stationsInfoGeoJson, currentPosition]) => {
+          if (!currentPosition) {
+            return;
+          }
+
+          const nearStations: Array<GeoJsonFeature> = [];
+
+          stationsInfoGeoJson.features.forEach(feature => {
+            const { geometry } = feature;
+            const to = new google.maps.LatLng({
+              lng: geometry.coordinates[0],
+              lat: geometry.coordinates[1],
+            });
+            const distance = google.maps.geometry.spherical.computeDistanceBetween(
+              currentPosition,
+              to
+            );
+            // meters
+            if (distance < 600) {
+              nearStations.push(feature);
+            }
+          });
+          console.log(nearStations);
+        }
+      );
+
+      // const stationsStatusesPromise = fetchBicingStationsStatus();
+
+      // Promise.all([stationsInfoPromise, stationsStatusesPromise]).then(([, stationStatuses]) => {
+      //   console.log(stationStatuses);
+      // });
     });
   }, []);
 
