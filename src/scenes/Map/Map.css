@@ -14,7 +14,6 @@
 
 #fab-findLocationButton {
   background-color: #fff;
-  border: 2px solid #fff;
   color: var(--color-grey-dark);
   position: absolute;
   top: -76px;
