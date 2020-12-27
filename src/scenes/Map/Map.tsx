@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './Map.css';
 import onLongPress from './services/onLongPress';
-import ActionPanel from './components/ActionPanel/ActionalPanel';
-import Button from './components/Button/Button';
+import ActionPanel from './components/ActionPanel/ActionPanel';
+import Button from './components/Buttons/Button';
 import CurrentPositionControl from './components/CurrentPositionControl/CurrentPositionControl';
 import { fetchBicingStationsStatus, getBicingStationsGeoData } from './services/bicingApi';
 import { GeoJsonFeature } from './services/types';

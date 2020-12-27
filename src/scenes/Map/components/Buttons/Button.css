@@ -9,3 +9,8 @@
 .button.button-contained:hover {
   box-shadow: none;
 }
+
+.button.fab-button,
+.button.fab-button:active {
+  box-shadow: var(--shadows-button-default);
+}
