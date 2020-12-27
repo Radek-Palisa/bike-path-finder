@@ -3,9 +3,12 @@ import './Map.css';
 import { Loader } from '@googlemaps/js-api-loader';
 import onLongPress from './services/onLongPress';
 import ActionPanel from './components/ActionPanel/ActionalPanel';
+import Button from './components/Button/Button';
 import CurrentPositionControl from './components/CurrentPositionControl/CurrentPositionControl';
 import { fetchBicingStationsStatus, getBicingStationsGeoData } from './services/bicingApi';
 import { GeoJsonFeature } from './services/types';
+import { ReactComponent as DirectionsIcon } from '../../assets/directions.svg';
+import Typography from './components/Typography/Typography';
 
 const loader = new Loader({
   apiKey: process.env.REACT_APP_GOOGLE_API_KEY || '',
@@ -99,7 +102,15 @@ export default function Map() {
   return (
     <div id="map-container">
       <div id="map" ref={mapDiv}></div>
-      <ActionPanel isOn={Boolean(destination)}>{destination?.toUrlValue()}</ActionPanel>
+      <ActionPanel isOn={Boolean(destination)}>
+        <Typography gutterBottom>Dropped pin</Typography>
+        <Typography color="textSecondary" paragraph>
+          {destination?.toUrlValue()}
+        </Typography>
+        <Button variant="contained" startIcon={<DirectionsIcon />} color="primary">
+          Directions
+        </Button>
+      </ActionPanel>
     </div>
   );
 }

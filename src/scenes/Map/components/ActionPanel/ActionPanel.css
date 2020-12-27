@@ -1,18 +1,18 @@
 #action-panel {
   z-index: 1;
   position: absolute;
-    bottom: 0;
-    left: 0;
+  bottom: 0;
+  left: 0;
   width: 100%;
   min-height: 100px;
   padding: 20px;
   background-color: white;
-  border-radius: 6px 6px 0 0;
-  box-shadow: 0px -5px 6px rgba(0,0,0,.12);
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
   /* 100 + 3 to hide the box shadow too */
   transform: translateY(103%);
   /* transition: transform 0.25s ease-in-out */
-  transition: transform 0.2s ease-in
+  transition: transform 0.2s ease-in;
 }
 
 #action-panel.action-panel--active {
