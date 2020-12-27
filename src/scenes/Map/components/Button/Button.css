@@ -1,0 +1,11 @@
+.button.button-contained {
+  border-radius: 36px;
+  height: 40px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  box-shadow: none;
+}
+
+.button.button-contained:hover {
+  box-shadow: none;
+}
