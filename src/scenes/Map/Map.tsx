@@ -9,6 +9,7 @@ import { fetchBicingStationsStatus, getBicingStationsGeoData } from './services/
 import { GeoJsonFeature } from './services/types';
 import { ReactComponent as DirectionsIcon } from '../../assets/directions.svg';
 import Typography from './components/Typography/Typography';
+import { getBikeStationIcon } from './components/utils/getBikeStationIcon';
 
 const loader = new Loader({
   apiKey: process.env.REACT_APP_GOOGLE_API_KEY || '',
@@ -65,6 +66,12 @@ export default function Map() {
       const stationsInfoPromise = getBicingStationsGeoData().then(data => {
         map.data.addGeoJson(data);
         return data;
+      });
+
+      map.data.setStyle({
+        icon: {
+          url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(getBikeStationIcon(0.6)),
+        },
       });
 
       Promise.all([stationsInfoPromise, currentPositionPromise]).then(
