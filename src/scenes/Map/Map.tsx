@@ -19,6 +19,7 @@ const loader = new Loader({
 export default function Map() {
   const mapDiv = useRef<HTMLDivElement>(null);
   const marker = useRef<google.maps.Marker | null>(null);
+  const centerMapToCurrentPosition = useRef(() => {});
   const [destination, setDestination] = useState<google.maps.LatLng | null>(null);
 
   useEffect(() => {
@@ -58,6 +59,8 @@ export default function Map() {
 
       const currentPositionControl = new CurrentPositionControl(map);
       const currentPositionPromise = currentPositionControl.getCurrentPosition();
+
+      centerMapToCurrentPosition.current = currentPositionControl.centerMapToCurrentPosition;
 
       const stationsInfoPromise = getBicingStationsGeoData().then(data => {
         map.data.addGeoJson(data);
