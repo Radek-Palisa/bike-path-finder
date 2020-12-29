@@ -38,6 +38,7 @@ function mapBicingStationsInfoToGeoJson(
       },
       properties: {
         capacity,
+        shouldShowStatus: false,
       },
     })),
   };

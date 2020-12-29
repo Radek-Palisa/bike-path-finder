@@ -68,44 +68,98 @@ export default function Map() {
         return data;
       });
 
-      map.data.setStyle({
-        icon: {
-          url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(getBikeStationIcon(0.6)),
-        },
+      map.data.setStyle(feature => {
+        if (feature.getProperty('shouldShowStatus')) {
+          const availableMechanical = feature.getProperty('availableMechanical') || 0;
+          const availableEbike = feature.getProperty('availableElectric') || 0;
+          const capacity = feature.getProperty('capacity') || 0;
+
+          const dec = (availableMechanical + availableEbike) / capacity;
+
+          // rounded to 1 decimal but never less than 0.1 or more than 1
+          const availableTotal = Math.min(
+            Math.max(Math.round((dec + Number.EPSILON) * 10) / 10, 0.1),
+            1
+          );
+
+          return {
+            icon: {
+              url:
+                'data:image/svg+xml;charset=UTF-8,' +
+                encodeURIComponent(getBikeStationIcon(availableTotal)),
+            },
+          };
+        }
+        return {
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            fillColor: '#db504a',
+            fillOpacity: 1,
+            scale: 7,
+            strokeWeight: 1,
+            strokeColor: 'white',
+          },
+        };
       });
 
-      Promise.all([stationsInfoPromise, currentPositionPromise]).then(
-        ([stationsInfoGeoJson, currentPosition]) => {
-          if (!currentPosition) {
-            return;
-          }
+      const nearStationsPromise: Promise<GeoJsonFeature[]> = Promise.all([
+        stationsInfoPromise,
+        currentPositionPromise,
+      ]).then(([stationsInfoGeoJson, currentPosition]) => {
+        const nearStations: Array<GeoJsonFeature> = [];
 
-          const nearStations: Array<GeoJsonFeature> = [];
+        if (!currentPosition) {
+          return nearStations; // empty
+        }
 
-          stationsInfoGeoJson.features.forEach(feature => {
-            const { geometry } = feature;
-            const to = new google.maps.LatLng({
-              lng: geometry.coordinates[0],
-              lat: geometry.coordinates[1],
-            });
-            const distance = google.maps.geometry.spherical.computeDistanceBetween(
-              currentPosition,
-              to
-            );
-            // meters
-            if (distance < 600) {
-              nearStations.push(feature);
-            }
+        stationsInfoGeoJson.features.forEach(feature => {
+          const { geometry } = feature;
+          const to = new google.maps.LatLng({
+            lng: geometry.coordinates[0],
+            lat: geometry.coordinates[1],
           });
-          console.log(nearStations);
+          const distance = google.maps.geometry.spherical.computeDistanceBetween(
+            currentPosition,
+            to
+          );
+          // meters
+          if (distance < 600) {
+            nearStations.push(feature);
+          }
+        });
+
+        return nearStations;
+      });
+
+      const stationsStatusesPromise = fetchBicingStationsStatus();
+
+      Promise.all([nearStationsPromise, stationsStatusesPromise]).then(
+        ([nearStations, stationStatuses]) => {
+          const nearStationsCopy = [...nearStations];
+
+          stationStatuses.data.stations.forEach(station => {
+            const feature = map.data.getFeatureById(station.station_id);
+
+            if (!feature) return;
+
+            if (nearStationsCopy.length) {
+              const nearStationIndex = nearStationsCopy?.findIndex(s => s.id === feature.getId());
+
+              if (nearStationIndex > -1) {
+                nearStationsCopy.splice(nearStationIndex, 1);
+                feature.setProperty('shouldShowStatus', true);
+              }
+            }
+
+            feature.setProperty(
+              'availableMechanical',
+              station.num_bikes_available_types.mechanical
+            );
+            feature.setProperty('availableElectric', station.num_bikes_available_types.ebike);
+            feature.setProperty('availableDocks', station.num_docks_available);
+          });
         }
       );
-
-      // const stationsStatusesPromise = fetchBicingStationsStatus();
-
-      // Promise.all([stationsInfoPromise, stationsStatusesPromise]).then(([, stationStatuses]) => {
-      //   console.log(stationStatuses);
-      // });
     });
   }, []);
 
