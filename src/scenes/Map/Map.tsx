@@ -9,7 +9,7 @@ import { fetchBicingStationsStatus, getBicingStationsGeoData } from './services/
 import { GeoJsonFeature } from './services/types';
 import { ReactComponent as DirectionsIcon } from '../../assets/directions.svg';
 import Typography from './components/Typography/Typography';
-import { getBikeStationIcon } from './components/utils/getBikeStationIcon';
+import getBikeStationIcon from './services/utils/getBikeStationIcon';
 
 import dotStation from '../../assets/dot-station.svg';
 
