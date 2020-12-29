@@ -11,6 +11,8 @@ import { ReactComponent as DirectionsIcon } from '../../assets/directions.svg';
 import Typography from './components/Typography/Typography';
 import { getBikeStationIcon } from './components/utils/getBikeStationIcon';
 
+import dotStation from '../../assets/dot-station.svg';
+
 const loader = new Loader({
   apiKey: process.env.REACT_APP_GOOGLE_API_KEY || '',
   version: 'weekly',
@@ -92,12 +94,7 @@ export default function Map() {
         }
         return {
           icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            fillColor: '#db504a',
-            fillOpacity: 1,
-            scale: 7,
-            strokeWeight: 1,
-            strokeColor: 'white',
+            url: dotStation,
           },
         };
       });
