@@ -26,16 +26,6 @@
   --spacing-xl: calc(4 * var(--spacing-unit));
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
-}
-
-body {
-  font-family: 'Roboto', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
 /* Box sizing rules */
 *,
 *::before,
@@ -69,6 +59,9 @@ dd {
 
 /* Set core body defaults */
 body {
+  font-family: 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
   scroll-behavior: smooth;
   text-rendering: optimizeSpeed;
