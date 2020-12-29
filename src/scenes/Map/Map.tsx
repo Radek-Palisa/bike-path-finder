@@ -9,6 +9,7 @@ import { fetchBicingStationsStatus, getBicingStationsGeoData } from './services/
 import { GeoJsonFeature } from './services/types';
 import { ReactComponent as DirectionsIcon } from '../../assets/directions.svg';
 import Typography from './components/Typography/Typography';
+import { BikeStationIcon } from './components/BikeStation/BikeStationIcon';
 
 const loader = new Loader({
   apiKey: process.env.REACT_APP_GOOGLE_API_KEY || '',
@@ -64,6 +65,8 @@ export default function Map() {
         return data;
       });
 
+      //map.data.style
+
       Promise.all([stationsInfoPromise, currentPositionPromise]).then(
         ([stationsInfoGeoJson, currentPosition]) => {
           if (!currentPosition) {
@@ -103,6 +106,7 @@ export default function Map() {
     <div id="map-container">
       <div id="map" ref={mapDiv}></div>
       <ActionPanel isOn={Boolean(destination)}>
+        <BikeStationIcon filledPercentage={0.9} />
         <Typography gutterBottom>Dropped pin</Typography>
         <Typography color="textSecondary" paragraph>
           {destination?.toUrlValue()}
