@@ -76,7 +76,7 @@ export default function Map() {
           const availableEbike = feature.getProperty('availableElectric') || 0;
           const availableBikes = availableMechanical + availableEbike;
           const capacity = feature.getProperty('capacity') || 0;
-          // Real average capacity is 27.5 but 10 is a high enough number
+          // Real average capacity is 27.5 but 10 is a reasonably high number
           const halfOfAverageCapacity = 10;
 
           const dec = availableBikes / capacity;
@@ -84,6 +84,8 @@ export default function Map() {
           const roundToOneDecimal = (number: number, min: number, max: number) =>
             Math.min(Math.max(Math.round((number + Number.EPSILON) * 10) / 10, min), max);
 
+          // For better visibility, if there are bikes available the minimum fill is 0.2
+          // and if it's not completely full the max is 0.9.
           const getAvailableTotal = () => {
             if (dec === 0) {
               return 0;
@@ -91,6 +93,8 @@ export default function Map() {
             if (dec > 0.9 && dec < 1) {
               return 0.9;
             }
+            // Since 10 bikes is already a pretty high number of bikes, regardless of the actual station capacity,
+            // we will show it at least half full. The other half of the fill depends on the stations capacity.
             if (availableBikes >= halfOfAverageCapacity) {
               const intuitiveFillPercentage =
                 0.5 +
@@ -99,7 +103,6 @@ export default function Map() {
 
               return roundToOneDecimal(intuitiveFillPercentage, 0.2, 1);
             }
-            // rounded to 1 decimal but never less than 0.2 or more than 1
             return roundToOneDecimal(dec, 0.2, 1);
           };
 
