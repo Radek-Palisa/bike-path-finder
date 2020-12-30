@@ -74,21 +74,40 @@ export default function Map() {
         if (feature.getProperty('shouldShowStatus')) {
           const availableMechanical = feature.getProperty('availableMechanical') || 0;
           const availableEbike = feature.getProperty('availableElectric') || 0;
+          const availableBikes = availableMechanical + availableEbike;
           const capacity = feature.getProperty('capacity') || 0;
+          // Real average capacity is 27.5 but 10 is a high enough number
+          const halfOfAverageCapacity = 10;
 
-          const dec = (availableMechanical + availableEbike) / capacity;
+          const dec = availableBikes / capacity;
 
-          // rounded to 1 decimal but never less than 0.1 or more than 1
-          const availableTotal = Math.min(
-            Math.max(Math.round((dec + Number.EPSILON) * 10) / 10, 0.1),
-            1
-          );
+          const roundToOneDecimal = (number: number, min: number, max: number) =>
+            Math.min(Math.max(Math.round((number + Number.EPSILON) * 10) / 10, min), max);
+
+          const getAvailableTotal = () => {
+            if (dec === 0) {
+              return 0;
+            }
+            if (dec > 0.9 && dec < 1) {
+              return 0.9;
+            }
+            if (availableBikes >= halfOfAverageCapacity) {
+              const intuitiveFillPercentage =
+                0.5 +
+                ((availableBikes - halfOfAverageCapacity) / (capacity - halfOfAverageCapacity)) *
+                  0.5;
+
+              return roundToOneDecimal(intuitiveFillPercentage, 0.2, 1);
+            }
+            // rounded to 1 decimal but never less than 0.2 or more than 1
+            return roundToOneDecimal(dec, 0.2, 1);
+          };
 
           return {
             icon: {
               url:
                 'data:image/svg+xml;charset=UTF-8,' +
-                encodeURIComponent(getBikeStationIcon(availableTotal)),
+                encodeURIComponent(getBikeStationIcon(1 - getAvailableTotal())),
             },
           };
         }
