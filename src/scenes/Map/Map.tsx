@@ -82,7 +82,7 @@ export default function Map() {
               url:
                 'data:image/svg+xml;charset=UTF-8,' +
                 encodeURIComponent(
-                  getBikeStationIcon(1 - getStationAvailability(availableBikes, capacity))
+                  getBikeStationIcon(getStationAvailability(availableBikes, capacity))
                 ),
             },
           };
