@@ -1,10 +1,13 @@
-import getStationAvailability from './getStationAvailability';
+import getStationAvailability, { roundToOneDecimal } from './getStationAvailability';
 
-test('return 0 when there are no available bikes', () => {
-  expect(getStationAvailability(0, 20)).toBe(0);
+test('should round number to one decimal within the given range', () => {
+  expect(roundToOneDecimal(0.976, 0.2, 0.9)).toBe(0.9);
+  expect(roundToOneDecimal(0.26, 0.2, 0.9)).toBe(0.3);
+  expect(roundToOneDecimal(0.03, 0.1, 0.9)).toBe(0.1);
 });
 
-test('return 1 when station is full', () => {
+test('return correct percentage when station is completely full or empty', () => {
+  expect(getStationAvailability(0, 20)).toBe(0);
   expect(getStationAvailability(20, 20)).toBe(1);
 });
 
