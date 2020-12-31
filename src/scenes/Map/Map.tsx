@@ -10,7 +10,7 @@ import { GeoJsonFeature } from './services/types';
 import { ReactComponent as DirectionsIcon } from '../../assets/directions.svg';
 import Typography from './components/Typography/Typography';
 import getBikeStationIcon from './services/utils/getBikeStationIcon';
-
+import getStationAvailability from './services/getStationAvailability/getStationAvailability';
 import dotStation from '../../assets/dot-station.svg';
 
 const loader = new Loader({
@@ -76,41 +76,14 @@ export default function Map() {
           const availableEbike = feature.getProperty('availableElectric') || 0;
           const availableBikes = availableMechanical + availableEbike;
           const capacity = feature.getProperty('capacity') || 0;
-          // Real average capacity is 27.5 but 10 is a reasonably high number
-          const halfOfAverageCapacity = 10;
-
-          const dec = availableBikes / capacity;
-
-          const roundToOneDecimal = (number: number, min: number, max: number) =>
-            Math.min(Math.max(Math.round((number + Number.EPSILON) * 10) / 10, min), max);
-
-          // For better visibility, if there are bikes available the minimum fill is 0.2
-          // and if it's not completely full the max is 0.9.
-          const getAvailableTotal = () => {
-            if (dec === 0) {
-              return 0;
-            }
-            if (dec > 0.9 && dec < 1) {
-              return 0.9;
-            }
-            // Since 10 bikes is already a pretty high number of bikes, regardless of the actual station capacity,
-            // we will show it at least half full. The other half of the fill depends on the stations capacity.
-            if (availableBikes >= halfOfAverageCapacity) {
-              const intuitiveFillPercentage =
-                0.5 +
-                ((availableBikes - halfOfAverageCapacity) / (capacity - halfOfAverageCapacity)) *
-                  0.5;
-
-              return roundToOneDecimal(intuitiveFillPercentage, 0.2, 1);
-            }
-            return roundToOneDecimal(dec, 0.2, 1);
-          };
 
           return {
             icon: {
               url:
                 'data:image/svg+xml;charset=UTF-8,' +
-                encodeURIComponent(getBikeStationIcon(1 - getAvailableTotal())),
+                encodeURIComponent(
+                  getBikeStationIcon(1 - getStationAvailability(availableBikes, capacity))
+                ),
             },
           };
         }
