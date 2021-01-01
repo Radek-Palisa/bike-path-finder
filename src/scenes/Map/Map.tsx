@@ -12,11 +12,12 @@ import getBikeStationIcon from './services/utils/getBikeStationIcon';
 
 import dotStation from '../../assets/dot-station.svg';
 import useMap from './services/useMap';
+import isWithinDistance from './services/utils/isWithinDistance';
 
 export default function Map() {
   const mapDivRef = useRef<HTMLDivElement>(null);
   const marker = useRef<google.maps.Marker | null>(null);
-  const centerMapToCurrentPosition = useRef(() => {});
+  const currentPositionControl = useRef<CurrentPositionControl | null>(null);
   const [destination, setDestination] = useState<google.maps.LatLng | null>(null);
   const map = useMap(mapDivRef);
 
@@ -43,10 +44,8 @@ export default function Map() {
       }
     });
 
-    const currentPositionControl = new CurrentPositionControl(map);
-    const currentPositionPromise = currentPositionControl.getCurrentPosition();
-
-    centerMapToCurrentPosition.current = currentPositionControl.centerMapToCurrentPosition;
+    currentPositionControl.current = new CurrentPositionControl(map);
+    const currentPositionPromise = currentPositionControl.current.getCurrentPosition();
 
     const stationsInfoPromise = getBicingStationsGeoData().then(data => {
       map.data.addGeoJson(data);
@@ -98,9 +97,8 @@ export default function Map() {
           lng: geometry.coordinates[0],
           lat: geometry.coordinates[1],
         });
-        const distance = google.maps.geometry.spherical.computeDistanceBetween(currentPosition, to);
-        // meters
-        if (distance < 600) {
+
+        if (isWithinDistance(600, currentPosition, to)) {
           nearStations.push(feature);
         }
       });
@@ -135,6 +133,27 @@ export default function Map() {
       }
     );
   }, [map]);
+
+  useEffect(() => {
+    if (!map || !destination) return;
+
+    currentPositionControl.current?.getCurrentPosition().then(currentPosition => {
+      map.data.forEach(feature => {
+        feature.getGeometry().forEachLatLng(latLng => {
+          const isCloseToDestination = isWithinDistance(600, destination, latLng);
+          const isCloseToOrigin = currentPosition
+            ? isWithinDistance(600, currentPosition, latLng)
+            : false;
+
+          if (isCloseToDestination || isCloseToOrigin) {
+            return feature.setProperty('shouldShowStatus', true);
+          }
+
+          feature.setProperty('shouldShowStatus', false);
+        });
+      });
+    });
+  }, [map, destination]);
 
   return (
     <div id="map-container">
