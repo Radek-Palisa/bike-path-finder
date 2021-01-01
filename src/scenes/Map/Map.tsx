@@ -177,7 +177,10 @@ export default function Map() {
     <div id="map-container">
       <div id="map" ref={mapDivRef}></div>
       <ActionPanel isOn={Boolean(destination)}>
-        <Fab id="fab-findLocationButton" onClick={() => null}>
+        <Fab
+          id="fab-findLocationButton"
+          onClick={() => currentPositionControl.current?.centerMapToCurrentPosition()}
+        >
           <FindLocationIcon />
         </Fab>
         <Typography gutterBottom>Dropped pin</Typography>
