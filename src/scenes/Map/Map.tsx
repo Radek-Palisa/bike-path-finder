@@ -9,7 +9,7 @@ import { GeoJsonFeature } from './services/types';
 import { ReactComponent as DirectionsIcon } from '../../assets/directions.svg';
 import Typography from './components/Typography/Typography';
 import getBikeStationIcon from './services/utils/getBikeStationIcon';
-
+import getStationAvailability from './services/getStationAvailability/getStationAvailability';
 import dotStation from '../../assets/dot-station.svg';
 import useMap from './services/useMap';
 import isWithinDistance from './services/utils/isWithinDistance';
@@ -56,21 +56,16 @@ export default function Map() {
       if (feature.getProperty('shouldShowStatus')) {
         const availableMechanical = feature.getProperty('availableMechanical') || 0;
         const availableEbike = feature.getProperty('availableElectric') || 0;
+        const availableBikes = availableMechanical + availableEbike;
         const capacity = feature.getProperty('capacity') || 0;
-
-        const dec = (availableMechanical + availableEbike) / capacity;
-
-        // rounded to 1 decimal but never less than 0.1 or more than 1
-        const availableTotal = Math.min(
-          Math.max(Math.round((dec + Number.EPSILON) * 10) / 10, 0.1),
-          1
-        );
 
         return {
           icon: {
             url:
               'data:image/svg+xml;charset=UTF-8,' +
-              encodeURIComponent(getBikeStationIcon(availableTotal)),
+              encodeURIComponent(
+                getBikeStationIcon(getStationAvailability(availableBikes, capacity))
+              ),
           },
         };
       }
