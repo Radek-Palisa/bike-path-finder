@@ -25,4 +25,8 @@ describe('getStationAvailability', () => {
   it('rounds result to one decimal', () => {
     expect(getStationAvailability(9, 20)).toBe(0.5);
   });
+
+  it('returns a valid number as fallback even if invalid values are passed', () => {
+    expect(getStationAvailability(24, 20)).toBe(1);
+  });
 });
