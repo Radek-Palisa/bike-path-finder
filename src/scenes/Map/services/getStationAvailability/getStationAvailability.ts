@@ -1,4 +1,4 @@
-export const roundToOneDecimal = (number: number, min: number, max: number) =>
+const roundToOneDecimal = (number: number, min: number, max: number) =>
   Math.min(Math.max(Math.round((number + Number.EPSILON) * 10) / 10, min), max);
 
 export default function getStationAvailability(availableBikes: number, capacity: number) {
