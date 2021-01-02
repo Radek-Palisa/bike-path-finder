@@ -179,7 +179,15 @@ export default function Map() {
       <ActionPanel isOn={Boolean(destination)}>
         <Fab
           id="fab-findLocationButton"
-          onClick={() => currentPositionControl.current?.centerMapToCurrentPosition()}
+          onClick={() => {
+            currentPositionControl.current?.centerMapToCurrentPosition();
+            setFindLocationActive(true);
+            setTimeout(() => {
+              setFindLocationActive(false);
+            }, 1200);
+            clearTimeout();
+          }}
+          className={findLocationActive ? 'active' : ''}
         >
           <FindLocationIcon />
         </Fab>
