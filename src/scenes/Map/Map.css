@@ -20,6 +20,6 @@
   right: var(--spacing-md);
 }
 
-#fab-findLocationButton.active {
+#fab-findLocationButton:active {
   color: var(--color-primary-main);
 }
