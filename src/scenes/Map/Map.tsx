@@ -13,13 +13,17 @@ import getStationAvailability from './services/getStationAvailability/getStation
 import dotStation from '../../assets/dot-station.svg';
 import useMap from './services/useMap';
 import isWithinDistance from './services/utils/isWithinDistance';
+import useDirections from './services/useDirections';
+import getThreeClosestStations from './services/utils/getNearStations';
 
 export default function Map() {
   const mapDivRef = useRef<HTMLDivElement>(null);
   const marker = useRef<google.maps.Marker | null>(null);
   const currentPositionControl = useRef<CurrentPositionControl | null>(null);
   const [destination, setDestination] = useState<google.maps.LatLng | null>(null);
+  const stationsNearDestination = useRef<google.maps.Data.Feature[]>([]);
   const map = useMap(mapDivRef);
+  const directions = useDirections(map);
 
   useEffect(() => {
     if (!map) return;
@@ -133,8 +137,11 @@ export default function Map() {
     if (!map || !destination) return;
 
     currentPositionControl.current?.getCurrentPosition().then(currentPosition => {
-      map.data.forEach(feature => {
-        feature.getGeometry().forEachLatLng(latLng => {
+      stationsNearDestination.current = getThreeClosestStations({
+        mapDataLayer: map.data,
+        to: destination,
+        onEach: feature => {
+          const latLng = (feature.getGeometry() as google.maps.Data.Point).get();
           const isCloseToDestination = isWithinDistance(600, destination, latLng);
           const isCloseToOrigin = currentPosition
             ? isWithinDistance(600, currentPosition, latLng)
@@ -145,10 +152,26 @@ export default function Map() {
           }
 
           feature.setProperty('shouldShowStatus', false);
-        });
+        },
       });
     });
   }, [map, destination]);
+
+  const handleFindRoute = () => {
+    currentPositionControl.current?.getCurrentPosition().then(currentPosition => {
+      if (!currentPosition || !destination || !map) return;
+
+      const stationsNearOrigin = getThreeClosestStations({
+        mapDataLayer: map.data,
+        to: currentPosition,
+      });
+
+      const neareastOriginStationLatLng = (stationsNearOrigin[0].getGeometry() as google.maps.Data.Point).get();
+      const neareastDestinationStationLatLng = (stationsNearDestination.current[0].getGeometry() as google.maps.Data.Point).get();
+
+      directions.findRoute(neareastOriginStationLatLng, neareastDestinationStationLatLng);
+    });
+  };
 
   return (
     <div id="map-container">
@@ -158,7 +181,12 @@ export default function Map() {
         <Typography color="textSecondary" paragraph>
           {destination?.toUrlValue()}
         </Typography>
-        <Button variant="contained" startIcon={<DirectionsIcon />} color="primary">
+        <Button
+          onClick={handleFindRoute}
+          variant="contained"
+          startIcon={<DirectionsIcon />}
+          color="primary"
+        >
           Directions
         </Button>
       </ActionPanel>
