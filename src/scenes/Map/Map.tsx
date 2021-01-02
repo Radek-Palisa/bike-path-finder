@@ -15,6 +15,7 @@ import useMap from './services/useMap';
 import isWithinDistance from './services/utils/isWithinDistance';
 import useDirections from './services/useDirections';
 import getThreeClosestStations from './services/utils/getNearStations';
+import FindMyLocationBtn from './components/Buttons/FindMyLocationBtn';
 
 export default function Map() {
   const mapDivRef = useRef<HTMLDivElement>(null);
@@ -177,20 +178,9 @@ export default function Map() {
     <div id="map-container">
       <div id="map" ref={mapDivRef}></div>
       <ActionPanel isOn={Boolean(destination)}>
-        <Fab
-          id="fab-findLocationButton"
-          onClick={() => {
-            currentPositionControl.current?.centerMapToCurrentPosition();
-            setFindLocationActive(true);
-            setTimeout(() => {
-              setFindLocationActive(false);
-            }, 1200);
-            clearTimeout();
-          }}
-          className={findLocationActive ? 'active' : ''}
-        >
-          <FindLocationIcon />
-        </Fab>
+        <FindMyLocationBtn
+          onClick={() => currentPositionControl.current?.centerMapToCurrentPosition()}
+        />
         <Typography gutterBottom>Dropped pin</Typography>
         <Typography color="textSecondary" paragraph>
           {destination?.toUrlValue()}
