@@ -8,8 +8,10 @@ type Props = {
 
 export default function ActionPanel({ children, isOn }: Props) {
   return (
-    <div id="action-panel" className={isOn ? 'action-panel--active' : ''}>
-      {children}
+    <div>
+      <div id="action-panel" className={isOn ? 'action-panel--active' : ''}>
+        {children}
+      </div>
     </div>
   );
 }

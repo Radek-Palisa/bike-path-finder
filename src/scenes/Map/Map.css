@@ -11,27 +11,3 @@
 #map {
   height: 100%;
 }
-
-#locationButton {
-  height: 56px;
-  width: 56px;
-  color: var(--color-grey-dark);
-  background-color: #fff;
-  border: 2px solid #fff;
-  border-radius: 50%;
-  box-shadow: var(--shadows-button-default);
-  cursor: pointer;
-  margin-bottom: var(--spacing-md);
-  margin-right: var(--spacing-md);
-  padding: 0;
-  transition: color 0.4s;
-}
-
-#locationButton.active {
-  color: var(--color-primary-main);
-}
-
-#locationButton:focus {
-  outline: none;
-  box-shadow: var(--shadows-button-focus);
-}

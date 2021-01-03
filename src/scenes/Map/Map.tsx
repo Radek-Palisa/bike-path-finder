@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './Map.css';
 import onLongPress from './services/onLongPress';
-import ActionPanel from './components/ActionPanel/ActionalPanel';
-import Button from './components/Button/Button';
+import ActionPanel from './components/ActionPanel/ActionPanel';
+import Button from './components/Buttons/Button';
 import CurrentPositionControl from './components/CurrentPositionControl/CurrentPositionControl';
 import { fetchBicingStationsStatus, getBicingStationsGeoData } from './services/bicingApi';
 import { GeoJsonFeature } from './services/types';
@@ -15,6 +15,7 @@ import useMap from './services/useMap';
 import isWithinDistance from './services/utils/isWithinDistance';
 import useDirections from './services/useDirections';
 import getThreeClosestStations from './services/utils/getNearStations';
+import FindMyLocationBtn from './components/Buttons/FindMyLocationBtn';
 
 export default function Map() {
   const mapDivRef = useRef<HTMLDivElement>(null);
@@ -177,6 +178,9 @@ export default function Map() {
     <div id="map-container">
       <div id="map" ref={mapDivRef}></div>
       <ActionPanel isOn={Boolean(destination)}>
+        <FindMyLocationBtn
+          onClick={() => currentPositionControl.current?.centerMapToCurrentPosition()}
+        />
         <Typography gutterBottom>Dropped pin</Typography>
         <Typography color="textSecondary" paragraph>
           {destination?.toUrlValue()}
