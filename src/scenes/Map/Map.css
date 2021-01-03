@@ -11,17 +11,3 @@
 #map {
   height: 100%;
 }
-
-#fab-findLocationButton {
-  background-color: #fff;
-  color: var(--color-grey-dark);
-  position: absolute;
-  top: -76px;
-  right: var(--spacing-md);
-}
-
-#fab-findLocationButton.active,
-#fab-findLocationButton:active,
-#fab-findLocationButton:focus {
-  color: var(--color-primary-main);
-}
