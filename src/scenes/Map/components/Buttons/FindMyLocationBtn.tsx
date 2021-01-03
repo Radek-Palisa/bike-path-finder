@@ -11,18 +11,20 @@ export default function FindMyLocationBtn({ onClick }: Props) {
   const [findLocationActive, setFindLocationActive] = useState(false);
   const timeoutId = useRef<number>(-1);
 
+  const handleClick = () => {
+    window.clearTimeout(timeoutId.current);
+    onClick();
+    setFindLocationActive(true);
+    timeoutId.current = window.setTimeout(() => {
+      setFindLocationActive(false);
+    }, 1500);
+  };
+
   return (
     <Fab
       id="fab-findLocationButton"
       disableRipple
-      onClick={() => {
-        window.clearTimeout(timeoutId.current);
-        onClick();
-        setFindLocationActive(true);
-        timeoutId.current = window.setTimeout(() => {
-          setFindLocationActive(false);
-        }, 1500);
-      }}
+      onClick={handleClick}
       className={findLocationActive ? 'active' : ''}
     >
       <FindLocationIcon />
