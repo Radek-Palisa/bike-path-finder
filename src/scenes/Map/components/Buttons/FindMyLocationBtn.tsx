@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Fab from './Fab';
 import { ReactComponent as FindLocationIcon } from '../../../../assets/find_location.svg';
 import './FindMyLocationBtn.css';
@@ -9,17 +9,18 @@ type Props = {
 
 export default function FindMyLocationBtn({ onClick }: Props) {
   const [findLocationActive, setFindLocationActive] = useState(false);
+  const timeoutId = useRef<number>(-1);
 
   return (
     <Fab
       id="fab-findLocationButton"
-      disableRipple
       onClick={() => {
+        window.clearTimeout(timeoutId.current);
         onClick();
         setFindLocationActive(true);
-        window.setTimeout(() => {
+        timeoutId.current = window.setTimeout(() => {
           setFindLocationActive(false);
-        }, 1200);
+        }, 1500);
       }}
       className={findLocationActive ? 'active' : ''}
     >
