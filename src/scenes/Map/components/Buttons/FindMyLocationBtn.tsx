@@ -14,6 +14,7 @@ export default function FindMyLocationBtn({ onClick }: Props) {
   return (
     <Fab
       id="fab-findLocationButton"
+      disableRipple
       onClick={() => {
         window.clearTimeout(timeoutId.current);
         onClick();
