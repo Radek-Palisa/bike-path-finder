@@ -9,7 +9,7 @@ import { GeoJsonFeature } from './services/types';
 import { ReactComponent as DirectionsIcon } from '../../assets/directions.svg';
 import Typography from './components/Typography/Typography';
 import getBikeStationIcon from './services/utils/getBikeStationIcon';
-import getStationAvailability from './services/getStationAvailability/getStationAvailability';
+import getStationAvailability from './services/getStationAvailability';
 import dotStation from '../../assets/dot-station.svg';
 import useMap from './services/useMap';
 import isWithinDistance from './services/utils/isWithinDistance';

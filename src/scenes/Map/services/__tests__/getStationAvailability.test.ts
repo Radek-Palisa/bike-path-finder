@@ -1,4 +1,4 @@
-import getStationAvailability from './getStationAvailability';
+import getStationAvailability from '../getStationAvailability';
 
 describe('getStationAvailability', () => {
   it('returns correct percentage when station is completely full or empty', () => {
