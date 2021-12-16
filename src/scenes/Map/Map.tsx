@@ -13,7 +13,7 @@ import getStationAvailability from './services/getStationAvailability/getStation
 import dotStation from '../../assets/dot-station.svg';
 import useMap from './services/useMap';
 import isWithinDistance from './services/utils/isWithinDistance';
-import useDirections from './services/useDirections';
+import useRoute from './services/useRoute';
 import getThreeClosestStations from './services/utils/getNearStations';
 import FindMyLocationBtn from './components/Buttons/FindMyLocationBtn';
 
@@ -24,7 +24,7 @@ export default function Map() {
   const [destination, setDestination] = useState<google.maps.LatLng | null>(null);
   const stationsNearDestination = useRef<google.maps.Data.Feature[]>([]);
   const map = useMap(mapDivRef);
-  const directions = useDirections(map);
+  const { routes, findRoute } = useRoute(map);
 
   useEffect(() => {
     if (!map) return;
@@ -158,26 +158,31 @@ export default function Map() {
     });
   }, [map, destination]);
 
-  const handleFindRoute = () => {
-    currentPositionControl.current?.getCurrentPosition().then(currentPosition => {
-      if (!currentPosition || !destination || !map) return;
+  const handleFindRoute = async () => {
+    const currentPosition = await currentPositionControl.current?.getCurrentPosition();
 
-      const stationsNearOrigin = getThreeClosestStations({
-        mapDataLayer: map.data,
-        to: currentPosition,
-      });
+    if (!currentPosition || !destination || !map) return;
 
-      const neareastOriginStationLatLng = (stationsNearOrigin[0].getGeometry() as google.maps.Data.Point).get();
-      const neareastDestinationStationLatLng = (stationsNearDestination.current[0].getGeometry() as google.maps.Data.Point).get();
-
-      directions.findRoute(neareastOriginStationLatLng, neareastDestinationStationLatLng);
+    const stationsNearOrigin = getThreeClosestStations({
+      mapDataLayer: map.data,
+      to: currentPosition,
     });
+
+    const neareastOriginStationLatLng = (stationsNearOrigin[0].getGeometry() as google.maps.Data.Point).get();
+    const neareastDestinationStationLatLng = (stationsNearDestination.current[0].getGeometry() as google.maps.Data.Point).get();
+
+    await findRoute(
+      currentPosition,
+      neareastOriginStationLatLng,
+      neareastDestinationStationLatLng,
+      destination
+    );
   };
 
   return (
     <div id="map-container">
       <div id="map" ref={mapDivRef}></div>
-      <ActionPanel isOn={Boolean(destination)}>
+      <ActionPanel isOn={Boolean(destination && !routes)}>
         <FindMyLocationBtn
           onClick={() => currentPositionControl.current?.centerMapToCurrentPosition()}
         />
